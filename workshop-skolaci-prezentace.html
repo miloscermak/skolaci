@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI pro školáky · Workshop</title>
+<style>
+:root {
+  --bg: #FFF8E7;
+  --ink: #1A1A2E;
+  --yellow: #FFD93D;
+  --coral: #FF6B6B;
+  --teal: #4ECDC4;
+  --purple: #9B5DE5;
+  --pink: #F15BB5;
+  --green: #80ED99;
+  --blue: #56CFE1;
+  --shadow: 6px 6px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* PRESENTATION CONTAINER */
+.deck {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 4vh 6vw;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.slide.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* TYPOGRAPHY */
+h1 {
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(2rem, 4.5vw, 4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6em;
+}
+
+h3 {
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 0.4em;
+}
+
+p, li {
+  font-size: clamp(1.15rem, 1.9vw, 1.7rem);
+  line-height: 1.45;
+  margin-bottom: 0.5em;
+}
+
+ul, ol {
+  padding-left: 1.5em;
+}
+
+li {
+  margin-bottom: 0.4em;
+}
+
+.lead {
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.kicker {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--yellow);
+  font-weight: 800;
+  padding: 0.3em 0.8em;
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1em;
+  border-radius: 999px;
+}
+
+.kicker.coral { background: var(--coral); color: white; }
+.kicker.teal { background: var(--teal); color: var(--ink); }
+.kicker.purple { background: var(--purple); color: white; }
+.kicker.pink { background: var(--pink); color: white; }
+.kicker.green { background: var(--green); color: var(--ink); }
+
+/* COLORED TEXT */
+.hl { background: var(--yellow); padding: 0 0.2em; }
+.hl-coral { background: var(--coral); color: white; padding: 0 0.2em; }
+.hl-teal { background: var(--teal); padding: 0 0.2em; }
+.hl-purple { background: var(--purple); color: white; padding: 0 0.2em; }
+
+/* CARDS */
+.card {
+  background: white;
+  border: 4px solid var(--ink);
+  border-radius: 24px;
+  padding: 2.5vh 2.5vw;
+  box-shadow: var(--shadow);
+}
+
+.card.yellow { background: var(--yellow); }
+.card.coral { background: var(--coral); color: white; }
+.card.teal { background: var(--teal); }
+.card.purple { background: var(--purple); color: white; }
+.card.pink { background: var(--pink); color: white; }
+.card.green { background: var(--green); }
+.card.blue { background: var(--blue); }
+.card.dark { background: var(--ink); color: white; }
+
+/* GRIDS */
+.grid {
+  display: grid;
+  gap: 2vh 2vw;
+  margin-top: 2vh;
+}
+
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.center { text-align: center; }
+
+/* BIG QUOTE / KEY MESSAGE */
+.bigquote {
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+/* SECTION DIVIDERS */
+.divider-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+}
+
+.divider-block .num {
+  font-size: clamp(8rem, 18vw, 16rem);
+  font-weight: 900;
+  line-height: 0.85;
+  color: var(--ink);
+  -webkit-text-stroke: 6px var(--ink);
+  color: transparent;
+  margin-bottom: 0.1em;
+}
+
+.divider-block .label {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.divider-block .time {
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.5em;
+  color: var(--ink);
+  opacity: 0.6;
+}
+
+/* PROMPT BOX */
+.prompt {
+  background: var(--ink);
+  color: white;
+  padding: 1.5vh 1.8vw;
+  border-radius: 16px;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: clamp(1rem, 1.6vw, 1.4rem);
+  line-height: 1.4;
+  border-left: 8px solid var(--yellow);
+  margin: 1vh 0;
+}
+
+.prompt.bad { border-left-color: var(--coral); }
+.prompt.good { border-left-color: var(--green); }
+
+.prompt-label {
+  display: inline-block;
+  font-family: -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.prompt.bad .prompt-label { color: var(--coral); }
+.prompt.good .prompt-label { color: var(--green); }
+
+/* CHATBOT BADGE */
+.bot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 1.2vh 0.8vw;
+  box-shadow: var(--shadow-sm);
+}
+
+.bot .emoji { font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 0.3em; }
+.bot .name { font-weight: 900; font-size: clamp(1rem, 1.6vw, 1.4rem); }
+.bot .by { font-size: clamp(0.75rem, 1.1vw, 1rem); opacity: 0.6; }
+
+/* RULES — 5 zlatých */
+.rule {
+  display: flex;
+  gap: 1.5vw;
+  align-items: flex-start;
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 1.5vh 1.5vw;
+  box-shadow: var(--shadow-sm);
+}
+
+.rule .num {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--coral);
+  flex-shrink: 0;
+}
+
+.rule .body h3 { font-size: clamp(1.2rem, 2vw, 1.7rem); margin-bottom: 0.2em; }
+.rule .body p { font-size: clamp(0.95rem, 1.4vw, 1.2rem); margin-bottom: 0; opacity: 0.8; }
+
+/* ALTERNATIVES BOX */
+.alts {
+  background: var(--blue);
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 1.5vh 1.5vw;
+  margin-top: 1.5vh;
+}
+
+.alts h4 {
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6em;
+  font-weight: 800;
+}
+
+.alts ul { padding-left: 1.2em; }
+.alts li { font-size: clamp(0.95rem, 1.5vw, 1.2rem); margin-bottom: 0.3em; }
+
+/* ACTIVITY BOX */
+.activity {
+  background: var(--green);
+  border: 4px solid var(--ink);
+  border-radius: 24px;
+  padding: 2.5vh 2.5vw;
+  box-shadow: var(--shadow);
+}
+
+.activity .tag {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--green);
+  font-weight: 900;
+  padding: 0.3em 0.8em;
+  border-radius: 999px;
+  font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.7em;
+}
+
+/* DEMO BOX */
+.demo {
+  background: var(--purple);
+  color: white;
+  border: 4px solid var(--ink);
+  border-radius: 24px;
+  padding: 2.5vh 2.5vw;
+  box-shadow: var(--shadow);
+}
+
+.demo .tag {
+  display: inline-block;
+  background: white;
+  color: var(--purple);
+  font-weight: 900;
+  padding: 0.3em 0.8em;
+  border-radius: 999px;
+  font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.7em;
+}
+
+/* COMPARISON TABLE */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5vw;
+  margin-top: 1.5vh;
+}
+
+.compare-cell {
+  background: white;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 1.5vh 1.5vw;
+  box-shadow: var(--shadow-sm);
+}
+
+.compare-cell h3 { margin-bottom: 0.5em; font-size: clamp(1.2rem, 2vw, 1.6rem); }
+.compare-cell.yes { background: var(--green); }
+.compare-cell.no { background: var(--coral); color: white; }
+
+/* NAV */
+.nav {
+  position: fixed;
+  bottom: 1.5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  background: var(--ink);
+  color: white;
+  padding: 0.6vh 1vw;
+  border-radius: 999px;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+  font-weight: 800;
+}
+
+.nav button {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.4em 0.6em;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+
+.nav button:hover { background: rgba(255,255,255,0.2); }
+.nav .counter { font-size: 0.95rem; padding: 0 0.5em; min-width: 4em; text-align: center; }
+
+.nav .menubtn {
+  font-size: 1rem;
+  padding: 0.4em 0.7em;
+}
+
+/* PROGRESS */
+.progress {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: var(--coral);
+  transition: width 0.3s;
+  z-index: 99;
+}
+
+/* OVERVIEW */
+.overview {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,46,0.95);
+  display: none;
+  z-index: 200;
+  padding: 4vh 4vw;
+  overflow-y: auto;
+}
+
+.overview.active { display: block; }
+
+.overview h2 {
+  color: white;
+  margin-bottom: 2vh;
+  text-align: center;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5vh 1.5vw;
+}
+
+.overview-thumb {
+  background: var(--bg);
+  border: 3px solid var(--bg);
+  border-radius: 12px;
+  padding: 1.5vh 1.5vw;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  min-height: 8vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.overview-thumb:hover { transform: scale(1.03); }
+
+.overview-thumb .num {
+  font-weight: 900;
+  font-size: 0.85rem;
+  opacity: 0.5;
+  margin-bottom: 0.3em;
+}
+
+/* SPEAKER NOTES */
+.notes-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--ink);
+  color: white;
+  padding: 2vh 4vw 4vh;
+  font-size: 1rem;
+  line-height: 1.5;
+  display: none;
+  z-index: 150;
+  max-height: 40vh;
+  overflow-y: auto;
+  border-top: 4px solid var(--yellow);
+}
+
+.notes-panel.active { display: block; }
+.notes-panel h4 { color: var(--yellow); margin-bottom: 0.5em; }
+.notes-panel ul { padding-left: 1.5em; }
+.notes-panel li { font-size: 0.95rem; margin-bottom: 0.3em; }
+
+/* SPEAKER MODE INDICATOR */
+.help {
+  position: fixed;
+  top: 1.5vh;
+  right: 1.5vw;
+  background: rgba(26,26,46,0.85);
+  color: white;
+  padding: 0.4em 0.8em;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  z-index: 100;
+  cursor: pointer;
+  user-select: none;
+}
+
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,46,0.95);
+  color: white;
+  z-index: 250;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 4vw;
+}
+
+.help-overlay.active { display: flex; }
+
+.help-overlay .content {
+  max-width: 600px;
+}
+
+.help-overlay h2 { color: var(--yellow); margin-bottom: 1em; }
+.help-overlay table { width: 100%; font-size: 1.1rem; }
+.help-overlay td { padding: 0.5em 0.8em; }
+.help-overlay td.k {
+  font-family: "SF Mono", monospace;
+  font-weight: 800;
+  background: var(--ink);
+  border-radius: 6px;
+  text-align: center;
+  width: 30%;
+}
+
+/* SLIDE-SPECIFIC LAYOUTS */
+.cover {
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--coral) 100%);
+}
+
+.cover h1 {
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  margin-bottom: 0.3em;
+}
+
+.cover .subtitle {
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: 1em;
+}
+
+.cover .meta {
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+/* SECTION-LEVEL DIVIDERS */
+.section-divider {
+  background: var(--ink);
+  color: white;
+}
+
+.section-divider .divider-block .num {
+  -webkit-text-stroke-color: var(--yellow);
+}
+
+.section-divider .divider-block .label {
+  color: white;
+}
+
+.section-divider .divider-block .time {
+  color: var(--yellow);
+  opacity: 1;
+}
+
+/* EMOJI POEM */
+.emoji-poem {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  align-items: center;
+  margin-top: 2vh;
+}
+
+.emoji-line {
+  font-size: clamp(1.8rem, 3.6vw, 3.2rem);
+  letter-spacing: 0.18em;
+  line-height: 1.25;
+  text-align: center;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+/* EMOJI SONG (5 verses) */
+.emoji-song {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6vh;
+  align-items: center;
+  background: white;
+  border: 4px solid var(--ink);
+  border-radius: 24px;
+  padding: 2.5vh 3vw;
+  box-shadow: var(--shadow);
+  margin-top: 1vh;
+}
+
+.emoji-verse {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4vh;
+  align-items: center;
+}
+
+.emoji-poem.reveal {
+  gap: 1vh;
+}
+
+.reveal-line {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1vw;
+  align-items: center;
+  width: 100%;
+  max-width: 95%;
+}
+
+.reveal-line .text {
+  font-size: clamp(1rem, 1.7vw, 1.4rem);
+  font-weight: 700;
+  text-align: right;
+  line-height: 1.3;
+}
+
+.reveal-line .ems {
+  font-size: clamp(1.4rem, 3vw, 2.6rem);
+  letter-spacing: 0.12em;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  text-align: left;
+}
+
+/* QR PLACEHOLDER */
+.qr {
+  width: clamp(120px, 18vw, 200px);
+  height: clamp(120px, 18vw, 200px);
+  background: white;
+  border: 4px solid var(--ink);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 1em;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+/* LISTS WITH BIG NUMBERS */
+.bignum-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+
+.bignum-list li {
+  display: flex;
+  gap: 1.5vw;
+  align-items: flex-start;
+  margin: 0;
+}
+
+.bignum-list .n {
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 900;
+  color: var(--purple);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 1.5em;
+}
+
+.bignum-list .t {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  line-height: 1.4;
+}
+
+/* HIDE NAV ON COVER */
+@media print {
+  .nav, .progress, .help { display: none; }
+  .slide { display: flex !important; page-break-after: always; }
+}
+
+/* Mobile fallback */
+@media (max-width: 700px) {
+  .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ============ SLIDE 1: COVER ============ -->
+<section class="slide cover active" data-block="0">
+  <div>
+    <span class="kicker">Workshop · 4 hodiny · 10 let</span>
+    <h1>AI pro<br>školáky</h1>
+    <p class="subtitle">Jak si povídat s umělou inteligencí<br>a nepřijít přitom o rozum</p>
+    <p class="meta">Inspiruj.se · Miloš &amp; Senta Čermák</p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Workshop má 5 obsahových bloků + 2 přestávky.</li>
+      <li>Klíčová věta dne: „AI nehledá pravdu, hádá nejpravděpodobnější odpověď."</li>
+      <li>Druhá klíčová věta: „AI je trenér, ne hráč."</li>
+      <li>Klávesy: šipky = další/předchozí, N = poznámky, O = přehled, F = fullscreen, ? = nápověda.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 2: PLÁN DNE ============ -->
+<section class="slide" data-block="0">
+  <span class="kicker coral">Plán dne</span>
+  <h2>Co nás dnes čeká?</h2>
+  <div class="grid grid-2" style="margin-top: 3vh;">
+    <div class="card yellow">
+      <h3>1 · Co je AI a jak přemýšlí</h3>
+      <p style="margin-bottom:0;">Plastelína vs. kalkulačka. Robot knihovník. Hra na slova.</p>
+    </div>
+    <div class="card teal">
+      <h3>2 · Jak se ptát chytře</h3>
+      <p style="margin-bottom:0;">Promptování. Vlastní pohádka.</p>
+    </div>
+    <div class="card pink">
+      <h3>3 · Od textu k obrazu</h3>
+      <p style="margin-bottom:0;">Proměna židle. Tvoje storybook.</p>
+    </div>
+    <div class="card purple">
+      <h3>4 · Když AI lže</h3>
+      <p style="margin-bottom:0;">Halucinace. Bezpečnost. Spravedlnost.</p>
+    </div>
+  </div>
+  <div class="card dark" style="margin-top: 2vh; text-align:center;">
+    <h3 style="color:var(--yellow); margin-bottom:0.2em;">5 · Velké finále</h3>
+    <p style="margin-bottom:0; opacity:0.9;">Naše prezentace. Naše píseň. Pět zlatých pravidel.</p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Toto je „mapa" workshopu — projeď ji rychle, ale jasně.</li>
+      <li>Pauzy: po Bloku 1 (10 min), po Bloku 3 (20 min — svačina).</li>
+      <li>Nepředstírat, že to bude formální výuka. Spíš společné objevování.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 3: SEZNÁMENÍ ============ -->
+<section class="slide" data-block="0">
+  <span class="kicker">Krátké interview</span>
+  <h2>Chceme vás <span class="hl">poznat</span>.</h2>
+  <p class="lead" style="opacity: 0.75; margin-bottom: 1.5vh;">Pět otázek pro každého. Mluvte za sebe. Jdeme od jednoho k druhému.</p>
+  <div class="grid grid-2" style="gap: 1.2vh 1.2vw;">
+    <div class="rule"><div class="num">1</div><div class="body"><h3>Jak ti říkají?</h3><p>Stačí křestní.</p></div></div>
+    <div class="rule"><div class="num">2</div><div class="body"><h3>Používáš AI? K čemu?</h3><p>Domácí úkoly, hry, otázky… nebo vůbec.</p></div></div>
+    <div class="rule"><div class="num">3</div><div class="body"><h3>Čím chceš jednou být?</h3><p>Reálně. Nebo bláznivě. Klidně obojí.</p></div></div>
+    <div class="rule"><div class="num">4</div><div class="body"><h3>Kdybys byl zvíře — jaké?</h3><p>A proč zrovna to?</p></div></div>
+    <div class="rule" style="grid-column: span 2;"><div class="num">5</div><div class="body"><h3>A kdyby AI byla zvíře — jaké by bylo?</h3><p>Tohle je nejtěžší. A nejzajímavější. 🐾</p></div></div>
+  </div>
+  <p class="lead" style="margin-top: 2vh; opacity: 0.7; text-align: center;">🎙️ <em>Asistent diskrétně nahrává — jen pro nás. Uvidíš, na co to bude.</em></p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li><strong>Cíl:</strong> sebrat „surovinu" pro Suno píseň + Gamma prezentaci na konci dne. Jméno + zvíře + sen = textový vstup pro AI.</li>
+      <li><strong>Tempo:</strong> ~1 minuta na dítě. Pro 12 dětí = 12 min. Drž to v pohybu.</li>
+      <li><strong>Asistent</strong> nahrává na telefon (nebo na PLAUD), zároveň zapisuje jen jména a klíčová slova pro pojistku.</li>
+      <li>Pokud dítě váhá, dej jednoduché příklady (Q4: lev, žirafa, sova; Q5: opice, robot, pavouk, sova).</li>
+      <li><strong>Otázka 5</strong> je zlatá — odpovědi dětí ukazují jejich mentální model AI. Některé řeknou „pavouk" (sítě), „papoušek" (opakuje), „chameleón" (přizpůsobí se), „robot" (čekáme to, ale není to zvíře 😉). Vrátíme se k tomu na konci dne.</li>
+      <li>Pokud dítě nechce mluvit — nenuť, asistent přepíše „ticho" později.</li>
+      <li><strong>Pravidlo:</strong> žádná příjmení, žádné adresy, žádné fotky.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 4: CO JE AI? ============ -->
+<section class="slide" data-block="0">
+  <span class="kicker purple">Otázka pro vás</span>
+  <h1 style="margin-bottom: 1em;">Co je vlastně AI?</h1>
+  <p class="lead">Představte si, že vám právě přiletěl kamarád z jiné planety.<br>
+  Jak byste mu vysvětlili, co je to <span class="hl">umělá inteligence</span>?</p>
+  <p class="lead" style="margin-top: 2vh; opacity:0.7;">→ Sbíráme nápady na flipchart.<br>Vrátíme se k nim na konci dne.</p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Toto je otevřená diskuse. Sbíráme všechny nápady — i ty „špatné". Nesoudit.</li>
+      <li>Z Worldbandu: děti často říkají „něco fake", „něco co mluví", „chytrý robot". Všechny jsou správné, jen nedokonalé.</li>
+      <li>Slovo „fake" je pro děti velmi silný koncept — využij ho. Vrátíme se k němu u halucinací.</li>
+      <li>Asistent píše odpovědi na flipchart velkým písmem. Nezahazujeme — vrátíme se k tomu na konci.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 5: HÁDANKA — EMOJI ============ -->
+<section class="slide" data-block="0">
+  <span class="kicker pink">Hádanka</span>
+  <h2 style="margin-bottom: 0.5vh;">Co AI <span class="hl">vyrobila?</span></h2>
+  <p class="lead" style="opacity: 0.8; margin-bottom: 1.5vh;">Nechal jsem AI přeložit slavnou českou básničku do <strong>emoji</strong>. Hádejte, co to je. 👇</p>
+  <div class="emoji-song">
+    <div class="emoji-verse">
+      <div class="emoji-line">🐜 💥 🤕 🌳 🌲 👀</div>
+      <div class="emoji-line">🌙 🕛 📞 🐜 👨‍⚕️</div>
+    </div>
+    <div class="emoji-verse">
+      <div class="emoji-line">👨‍⚕️ 🔨 ❤️ ✍️ 📄 💊</div>
+      <div class="emoji-line">3️⃣ 📅 🍬 💊 🐜 💪 🦁</div>
+    </div>
+    <div class="emoji-verse">
+      <div class="emoji-line">🍬 💊 ➡️ 🩺 🐜 🤒</div>
+      <div class="emoji-line">☀️ 🔥 😵 🌙 😭 😭</div>
+    </div>
+    <div class="emoji-verse">
+      <div class="emoji-line">4️⃣ 🐜 🛏️ &nbsp; 5️⃣ 🐜 🤗 🗣️</div>
+      <div class="emoji-line">💨 🤕 🌅 🙂</div>
+    </div>
+    <div class="emoji-verse">
+      <div class="emoji-line">💨 🤕 🤲 🙂 🐜 ✨</div>
+      <div class="emoji-line">🌅 🛏️ 🤸</div>
+    </div>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li><strong>Klíčová aktivita Bloku 0.</strong> Funguje skoro vždy — děti ji rády hádají a uhádnou.</li>
+      <li>Postup: ukaž slide, dej skupině 30 sekund na šuškání, pak nech volné hlasování.</li>
+      <li>Pokud nic, nápověda 1: „První emoji je zvíře, které u nás žije v lese a hodně dělá."</li>
+      <li>Nápověda 2: „Tohle je písnička, kterou možná zpívala vaše babička. O zvířátku, co se zranilo."</li>
+      <li>Nápověda 3: zazpívej první řádek („Polámal se…") a nech je dokončit.</li>
+      <li>Když uhodnou — okamžitě přejdi na další slide (reveal).</li>
+      <li>Kdyby neuhodli ani po nápovědách — nevadí, slide #6 to odhalí.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 6: REVEAL — MRAVENEČEK ============ -->
+<section class="slide" data-block="0">
+  <span class="kicker green">Odhalení</span>
+  <h1 style="font-size: clamp(2.5rem, 5.5vw, 4.5rem);">Polámal se <span class="hl-coral">mraveneček!</span></h1>
+  <div class="emoji-poem reveal" style="margin-top: 1.5vh;">
+    <div class="reveal-line">
+      <div class="text">Polámal se mraveneček,<br>ví to celá obora.</div>
+      <div class="ems">🐜 💥 🤕 🌳 🌲 👀</div>
+    </div>
+    <div class="reveal-line">
+      <div class="text">O půlnoci zavolali<br>mravenčího doktora.</div>
+      <div class="ems">🌙 🕛 📞 🐜 👨‍⚕️</div>
+    </div>
+    <div class="reveal-line">
+      <div class="text">Doktor klepe na srdíčko,<br>potom píše recepis.</div>
+      <div class="ems">👨‍⚕️ 🔨 ❤️ ✍️ 📄 💊</div>
+    </div>
+    <div class="reveal-line">
+      <div class="text">Třikrát denně prášek tady,<br>bude chlapík jako rys.</div>
+      <div class="ems">3️⃣ 📅 🍬 💊 → 🐜 💪 🦁</div>
+    </div>
+  </div>
+  <p class="lead" style="margin-top: 2vh; text-align: center;">
+    AI rozumí jazykům. <span class="hl">I jazyku obrázků.</span>
+  </p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Tohle je „aha moment" úvodu. Děti vidí, že AI dovede něco kreativního a chytrého.</li>
+      <li>Pojmenuj ten výkon: „AI vzala báseň, kterou znáte, a převedla ji do úplně jiného jazyka — bez jediného českého slova."</li>
+      <li>Bonus: přečti emojis nahlas jako „příběh" („mravenec, bouchnutí, zranění, les, oči…") — ukaž, že emojis jsou taky jazyk.</li>
+      <li>Bridge na Blok 1: „Jak to AI dokáže? Jak vlastně přemýšlí? To si teď ukážeme."</li>
+      <li><strong>Alternativa pro budoucí workshopy:</strong> nech AI předem přeložit do emoji jinou písničku (Skákal pes přes oves, Pec nám spadla, Holka modrooká). Vyrobíš zásobu hádanek pro různé skupiny.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ BLOCK 1 DIVIDER ============ -->
+<section class="slide section-divider" data-block="1">
+  <div class="divider-block">
+    <div>
+      <div class="num">1</div>
+      <div class="label">Jak AI přemýšlí</div>
+      <div class="time">35 minut</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: PLASTELÍNA ============ -->
+<section class="slide" data-block="1">
+  <span class="kicker">Velká myšlenka</span>
+  <h2>AI je jiná než vše, co znáte.</h2>
+  <div class="compare" style="margin-top: 3vh;">
+    <div class="compare-cell no">
+      <h3>🧮 Kalkulačka</h3>
+      <p style="margin-bottom:0;">2 + 2 = <strong>4</strong>. Vždycky.<br>Jeden správný výsledek.</p>
+    </div>
+    <div class="compare-cell yes">
+      <h3>🤖 AI</h3>
+      <p style="margin-bottom:0;">Tisíc různých odpovědí.<br>A většina je správně.</p>
+    </div>
+  </div>
+  <p class="lead" style="margin-top: 3vh; text-align:center;">
+    AI je jako <span class="hl-coral">plastelína</span> — z jedné hroudy<br>uděláš dinosaura, mističku nebo sluníčko.
+  </p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Klíčový moment dne: děti pochopí, že AI nemá „jeden správný návod".</li>
+      <li>Ale: má jednu nepříjemnou vlastnost — občas se splete. Tady jen naťuknout, vrátíme se k tomu u halucinací.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 7: ROBOT KNIHOVNÍK ============ -->
+<section class="slide" data-block="1">
+  <span class="kicker teal">Jak se to naučila</span>
+  <h2>Představ si robota knihovníka.</h2>
+  <div class="card teal" style="margin-top: 2vh;">
+    <p class="lead">📚 Přečetl <strong>každou knihu na světě</strong>.<br>
+    🌐 A k tomu všechny weby.<br>
+    💤 Nespal, nejedl, jen četl.</p>
+  </div>
+  <p class="lead" style="margin-top: 3vh;">Ale pozor — <span class="hl">nečetl, aby rozuměl</span>.<br>Četl, aby <span class="hl-coral">rozpoznal vzorce</span>: které slovo chodí za jakým.</p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Tohle je nejdůležitější analogie celého workshopu. Investuj do ní čas.</li>
+      <li>Příklad: zeptej se „co se stane, když hodím kámen do vody?" — robot odpoví správně, ne protože to zažil, ale protože to v tisících textů četl.</li>
+      <li>Doporučuje se zdůraznit: „rozpoznal vzorce" — to je rozdíl mezi LLM a člověkem.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 8: AKTIVITA — VĚTA V KRUHU ============ -->
+<section class="slide" data-block="1">
+  <div class="activity">
+    <span class="tag">Aktivita · 10 minut</span>
+    <h2>Věta v kruhu</h2>
+    <p class="lead">Sedíme v kruhu. Já začnu větu jedním slovem.<br>Každý přidá <strong>jedno slovo</strong> tak, aby věta dávala smysl.</p>
+    <div class="prompt good" style="margin-top: 2vh;">
+      <span class="prompt-label">Můj začátek:</span>
+      „Ráno jsem vstal a..."
+    </div>
+    <p class="lead" style="margin-top: 2vh;">Pak stejnou větu necháme dokončit ChatGPT. <span class="hl">Porovnáme.</span></p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Začátky vět: „Ráno jsem vstal a…", „Včera v noci jsem viděl…", „Můj kočičák najednou…"</li>
+      <li>Pokud děti zaseknou, pomoz: každý jen JEDNO slovo, smysluplné, navazující.</li>
+      <li>Po dokončení věty pusť ChatGPT a nech ho dokončit stejný začátek 2–3×.</li>
+      <li>Diskuse: Proč jsme doplnili různá slova? AI se rozhoduje podle <em>pravděpodobnosti</em> — tak jako my, jen tisíckrát rychleji.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 9: VOICE MODE DEMO ============ -->
+<section class="slide" data-block="1">
+  <div class="demo">
+    <span class="tag">Demo lektora · 10 minut</span>
+    <h2>Hovor s ChatGPT</h2>
+    <p class="lead">📞 Pustíme ChatGPT na hlasitý odposlech.<br>Představím mu vás. Pak se ho můžete <strong>na cokoli zeptat</strong>.</p>
+    <p class="lead" style="margin-top: 2vh; opacity: 0.85;">→ Tipy: oblíbený film, vtip o pejskovi, je AI naživu, kolik je hvězd na nebi…</p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Použij ChatGPT voice mode (ne textový!) — je to mnohem působivější.</li>
+      <li>Začni úvodním popisem: „Jsem v Praze ve třídě se 12 dětmi, je nám asi 10 let, povídáme si o AI."</li>
+      <li>Nech každé dítě položit jednu otázku. Asistent zapisuje jména a otázky pro pozdější použití (Suno, Gamma).</li>
+      <li>Pokud se AI splete — nezametat pod koberec! Říct: „Vidíte? Dělá chyby. Vrátíme se k tomu."</li>
+      <li>Pozor na čas — voice mode rád povídá. Tvrdá hranice 10 minut.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 10: SLOVA JAKO ADRESY ============ -->
+<section class="slide" data-block="1">
+  <span class="kicker pink">Jak to uvnitř funguje</span>
+  <h2>Každé slovo má <span class="hl-coral">adresu</span>.</h2>
+  <div class="grid grid-2" style="margin-top: 3vh;">
+    <div class="card yellow">
+      <h3>🐕 PES</h3>
+      <p style="margin-bottom:0;">Bydlí blízko slov:<br><strong>štěkat, vodítko, pamlsek, kost</strong></p>
+    </div>
+    <div class="card coral">
+      <h3>🧱 CIHLA</h3>
+      <p style="margin-bottom:0;">Bydlí daleko od „pes".<br>Blízko slov: <strong>zeď, dům, malta</strong></p>
+    </div>
+  </div>
+  <p class="lead" style="margin-top: 3vh; text-align:center;">
+    AI má v hlavě <span class="hl">obrovskou mapu slov</span>.<br>
+    Z té mapy hádá, které slovo přijde dál.
+  </p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Vysvětli: AI se to naučila tak, že hrála hru „doplň zakryté slovo" miliardykrát.</li>
+      <li>Příklad: „Kočka pije ____." → Když uhodla „mléko", dostala bod. Když řekla „cement", musela se poučit.</li>
+      <li>Toto je technicky správný popis pre-trainingu LLM, ale podaný dětsky.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 11: KLÍČOVÁ VĚTA ============ -->
+<section class="slide" data-block="1">
+  <div class="bigquote">
+    AI nehledá<br>
+    <span class="hl-coral">pravdu</span>.<br>
+    Hádá <span class="hl">nejpravděpodobnější</span><br>
+    odpověď.
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Toto je nejdůležitější věta celého workshopu. Vrátíš se k ní 3× během dne.</li>
+      <li>Napiš ji velkým písmem na flipchart a nech ji tam viset.</li>
+      <li>Vysvětli: ve většině případů je nejpravděpodobnější odpověď správná. Ale ne vždy.</li>
+      <li>Tohle vede přímo k bloku 4 (halucinace).</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ PAUZA 1 ============ -->
+<section class="slide" data-block="pause">
+  <div class="divider-block">
+    <div>
+      <div style="font-size: clamp(5rem, 12vw, 10rem);">☕</div>
+      <div class="label">Pauza</div>
+      <div class="time">10 minut</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 2 DIVIDER ============ -->
+<section class="slide section-divider" data-block="2">
+  <div class="divider-block">
+    <div>
+      <div class="num">2</div>
+      <div class="label">Jak se ptát chytře</div>
+      <div class="time">40 minut</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: CO JE PROMPT ============ -->
+<section class="slide" data-block="2">
+  <span class="kicker teal">Nové slovo</span>
+  <h1>Prompt</h1>
+  <p class="lead" style="margin-top: 2vh;">Tak se říká <strong>otázce nebo zadání pro AI</strong>.</p>
+  <p class="lead" style="margin-top: 1vh;">Prompt je <span class="hl-coral">klíč</span>. Špatný klíč → špatná odpověď.<br>Dobrý klíč → odemkne <span class="hl">úžasnou odpověď</span>.</p>
+  <div class="card dark center" style="margin-top: 3vh;">
+    <p class="lead" style="margin-bottom: 0; color: var(--yellow);">📝 Čím přesnější prompt napíšeš,<br>tím lepší odpověď dostaneš.</p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Slovo „prompt" čteme „promt".</li>
+      <li>Tato dovednost — promptování — bude dětem užitečná, ať se AI vyvine jakkoli. Nezáleží na konkrétním nástroji.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 15: ŠPATNÝ vs DOBRÝ PROMPT ============ -->
+<section class="slide" data-block="2">
+  <h2>Lev v ZOO</h2>
+  <div class="prompt bad">
+    <span class="prompt-label">⚠️ Špatný prompt</span>
+    Popiš mi lva.
+  </div>
+  <p class="lead" style="margin-top: 1vh; opacity: 0.6;">→ Dostaneš nudný popis z encyklopedie.</p>
+  <div class="prompt good" style="margin-top: 2vh;">
+    <span class="prompt-label">✓ Dobrý prompt</span>
+    Popiš mi starého lva, který žije v pražské ZOO. Jmenuje se Artur a je smutný, protože prší. Piš to jako pohádku pro 10leté.
+  </div>
+  <p class="lead" style="margin-top: 1vh;">→ Dostaneš <span class="hl">úžasný příběh</span>.</p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Pusť oba prompty před dětmi do ChatGPT — porovnejte výstupy bok po boku.</li>
+      <li>Pojmenujte rozdíl: „Druhý prompt řekl AI <em>kdo, kde, jaký, jak to napsat</em>."</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 16: PĚT TIPŮ ============ -->
+<section class="slide" data-block="2">
+  <h2>Pět tipů na <span class="hl">dobrý prompt</span></h2>
+  <ol class="bignum-list" style="margin-top: 2vh;">
+    <li><span class="n">1</span><span class="t"><strong>Řekni AI, kým má být.</strong> „Jsi pohádkový vypravěč…"</span></li>
+    <li><span class="n">2</span><span class="t"><strong>Řekni přesně, co chceš.</strong> „10 zajímavostí o Jupiteru, každá jednou větou."</span></li>
+    <li><span class="n">3</span><span class="t"><strong>Dej příklad stylu.</strong> „Piš podobně jako tenhle text…"</span></li>
+    <li><span class="n">4</span><span class="t"><strong>Řekni, co NECHCEŠ.</strong> „Nepoužívej těžká slova. Žádné seznamy."</span></li>
+    <li><span class="n">5</span><span class="t"><strong>Nech AI zeptat se zpátky.</strong> „Než začneš, polož mi 3 otázky."</span></li>
+  </ol>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Nečti to jako seznam. Každý tip ukaž na jednom rychlém příkladu v ChatGPT.</li>
+      <li>Tip 5 je nejvíc překvapivý — ukaž ho jako poslední, „mega trik".</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 17: MEGA FINTA ============ -->
+<section class="slide" data-block="2">
+  <span class="kicker pink">Mega finta</span>
+  <h2>Nech AI napsat <span class="hl-coral">prompt za tebe</span>.</h2>
+  <div class="prompt good" style="margin-top: 3vh;">
+    <span class="prompt-label">✓ Mega prompt</span>
+    Chci napsat referát o sopkách pro školu. Jak bych se tě měl správně zeptat, abys mi co nejlíp pomohla?
+  </div>
+  <p class="lead" style="margin-top: 2vh; text-align: center;">
+    AI ti sama navrhne <span class="hl">dokonalé zadání</span>.<br>
+    Pak ho jen vezmeš a použiješ.
+  </p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Tohle je trik, který používají profíci. Děti budou nadšené, když to zafunguje.</li>
+      <li>Předveď to: zadej tenhle prompt do ChatGPT, ukaž výsledek, pak ten výsledek (vylepšený prompt) zadej znova.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 18: AKTIVITA — VLASTNÍ POHÁDKA ============ -->
+<section class="slide" data-block="2">
+  <div class="activity">
+    <span class="tag">Aktivita · 20 minut · vlastní zařízení</span>
+    <h2>Tvoje pohádka.</h2>
+    <p class="lead">Otevři ChatGPT (zdarma stačí). Napiš pohádku o <strong>svém oblíbeném zvířeti</strong>.</p>
+    <ol style="margin-top: 1vh; font-size: clamp(1.1rem, 1.8vw, 1.5rem);">
+      <li><strong>První pokus:</strong> jen napiš „Napiš mi pohádku o …"</li>
+      <li><strong>Vylepšení:</strong> použij aspoň 3 z pěti tipů.</li>
+      <li><strong>Porovnání:</strong> najdi v dvojici sousedu a ukažte si rozdíl.</li>
+    </ol>
+  </div>
+  <div class="alts">
+    <h4>📌 Pro lektora — alternativy zadání</h4>
+    <ul>
+      <li>Napiš pohádku o své vysněné profesi.</li>
+      <li>Napiš pohádku o tom, jak by vypadal den v cizí zemi.</li>
+      <li>Napiš pohádku, ve které je hlavní postavou tvůj kamarád ze třídy.</li>
+    </ul>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Hands-on: děti mají vlastní zařízení, použijí free ChatGPT (chatgpt.com bez přihlášení nebo s rodičovským účtem).</li>
+      <li>Asistent obchází, řeší technické problémy a pomáhá s prompty.</li>
+      <li>Lektor zatím obchází a sbírá nejvtipnější / nejhorší / nejlepší výsledky pro pozdější diskusi.</li>
+      <li>Vyhrazený čas: 5 min na první pokus, 10 min na vylepšení, 5 min na porovnání ve dvojici.</li>
+      <li>Pokud nějaké dítě nemá zařízení / nefunguje mu — zařaď ho do dvojice.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 19: ZLATÉ PRAVIDLO — NOVÁ KONVERZACE ============ -->
+<section class="slide" data-block="2">
+  <span class="kicker yellow">Zlaté pravidlo</span>
+  <h2 style="margin-bottom: 0.3em;">Nové téma → <span class="hl-coral">nová konverzace</span>.</h2>
+  <p class="lead">Když se 20 minut bavíš o dinosaurech a pak se zeptáš na matematiku,<br>AI bude <strong>zmatená</strong>.</p>
+  <div class="card green" style="margin-top: 3vh;">
+    <p class="lead" style="margin-bottom: 0;">💡 Stačí kliknout na <strong>„Nový chat"</strong>. Je to zadarmo a AI bude odpovídat líp.</p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Důvod: dlouhé konverzace zvyšují pravděpodobnost halucinace. AI se topí v kontextu.</li>
+      <li>U Claudu se tomu říká „context window" — ale dětem to není potřeba říkat.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ BLOCK 3 DIVIDER ============ -->
+<section class="slide section-divider" data-block="3">
+  <div class="divider-block">
+    <div>
+      <div class="num">3</div>
+      <div class="label">Od textu k obrazu</div>
+      <div class="time">50 minut</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 21: DŽUNGLE CHATBOTŮ ============ -->
+<section class="slide" data-block="3">
+  <h2>Která AI je <span class="hl">nejlepší</span>?</h2>
+  <p class="lead">Existuje jich spousta. Tady jsou tři hlavní:</p>
+  <div class="grid grid-3" style="margin-top: 2vh;">
+    <div class="bot">
+      <div class="emoji">💬</div>
+      <div class="name">ChatGPT</div>
+      <div class="by">OpenAI</div>
+    </div>
+    <div class="bot">
+      <div class="emoji">📖</div>
+      <div class="name">Claude</div>
+      <div class="by">Anthropic</div>
+    </div>
+    <div class="bot">
+      <div class="emoji">✨</div>
+      <div class="name">Gemini</div>
+      <div class="by">Google</div>
+    </div>
+  </div>
+  <p class="lead" style="margin-top: 3vh;">Plus 6 dalších: <strong>Copilot, Grok, Mistral, Meta AI, DeepSeek, Perplexity.</strong></p>
+  <p class="lead" style="margin-top: 1vh; text-align: center;">
+    Jako zmrzlina: <span class="hl-coral">vanilka, čokoláda, jahoda</span> — všechny dobré.<br>
+    Záleží, co máš rád.
+  </p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Dětem vysvětli: trénovat LLM stojí miliardy korun. Proto firem na světě, které to umí, je jen pár.</li>
+      <li>Většina je americká. Mistral je francouzský. DeepSeek je čínský.</li>
+      <li>Pro většinu úloh nezáleží, kterou volíš. Hlavně začni jednu používat.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 22: DEMO ŽIDLE ============ -->
+<section class="slide" data-block="3">
+  <div class="demo">
+    <span class="tag">Demo lektora · 10 minut</span>
+    <h2>Proměna židle</h2>
+    <p class="lead">Vyfotíme jednu židli ve třídě. A pak ji budeme měnit:</p>
+    <ol style="margin-top: 1.5vh; font-size: clamp(1.1rem, 1.8vw, 1.5rem);">
+      <li>„Udělej tu židli <strong>červenou</strong>."</li>
+      <li>„Posaď ji do <strong>kuchyně</strong>."</li>
+      <li>„Posaď na ni <strong>pandu, která jí banán</strong>."</li>
+      <li>„Pošli ji do <strong>vesmíru</strong>." 🚀</li>
+    </ol>
+    <p class="lead" style="margin-top: 2vh; opacity: 0.85;">→ Použijeme Gemini (zdarma). Ukáže se za 30 sekund.</p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Vyfotíš židli, otevřeš Gemini, „create image" → „upload image" → zadáš prompt.</li>
+      <li>Děti milují tuhle aktivitu. Z Worldbandu osvědčené 100×.</li>
+      <li>Po pár proměnách se ptej: „A teď, jaká bude další?" — nech děti navrhnout.</li>
+      <li>Pozor na vodoznaky / artefakty na obrázku — komentuj, že AI nemá oči, kreslí to ze vzorců.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 23: STORYBOOK DEMO ============ -->
+<section class="slide" data-block="3">
+  <div class="demo">
+    <span class="tag">Demo lektora · 8 minut</span>
+    <h2>Gemini Storybook</h2>
+    <p class="lead">AI nám napíše ilustrovaný dětský příběh za 2 minuty.</p>
+    <p class="lead" style="margin-top: 1vh;">📖 Nás dnes zajímá: <span class="hl">„Proč je moře slané?"</span></p>
+  </div>
+  <div class="alts">
+    <h4>📌 Pro lektora — alternativy</h4>
+    <ul>
+      <li>„Proč mají žirafy tak dlouhý krk?"</li>
+      <li>„Jak vznikla česká hokejová tradice?"</li>
+      <li>„Proč padá v zimě sníh, a ne déšť?"</li>
+      <li>„Proč máme svátek Velikonoce?"</li>
+    </ul>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Otevři Gemini → „Create a Storybook" → vlož prompt v češtině.</li>
+      <li>Free účet má limit 1 storybook denně. Pokud používáš lektorský účet — naplánuj!</li>
+      <li>Po vygenerování projděte storybook nahlas. Nějaké chyby? (Většinou ano — to je dobrá cvičba pro halucinace).</li>
+      <li>Otázka pro děti: „Kdo z vás by uměl tuhle pohádku napsat lépe?"</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 24: AKTIVITA — VLASTNÍ STORYBOOK ============ -->
+<section class="slide" data-block="3">
+  <div class="activity">
+    <span class="tag">Aktivita · 25 minut · vlastní zařízení</span>
+    <h2>Tvůj vlastní storybook</h2>
+    <p class="lead">Vyber si jedno téma. Otevři Gemini. Vyrob storybook.</p>
+    <div class="grid grid-3" style="margin-top: 1.5vh; gap: 1vh 1vw;">
+      <div style="background: white; padding: 1vh 1vw; border-radius: 12px; border: 2px solid var(--ink); text-align: center;">
+        <div style="font-size: 2rem;">🐘</div>
+        <strong>Den ze života<br>tvého oblíbeného zvířete</strong>
+      </div>
+      <div style="background: white; padding: 1vh 1vw; border-radius: 12px; border: 2px solid var(--ink); text-align: center;">
+        <div style="font-size: 2rem;">🍫</div>
+        <strong>Jak se vyrábí<br>čokoláda</strong>
+      </div>
+      <div style="background: white; padding: 1vh 1vw; border-radius: 12px; border: 2px solid var(--ink); text-align: center;">
+        <div style="font-size: 2rem;">🚀</div>
+        <strong>Co bych dělal<br>na cestě do vesmíru</strong>
+      </div>
+    </div>
+  </div>
+  <div class="alts">
+    <h4>⚠️ Pro lektora — Free limity</h4>
+    <ul>
+      <li>Free Gemini = 1 storybook na den. Děti budou pracovat ve <strong>dvojicích</strong> nebo <strong>trojicích</strong>.</li>
+      <li>Alternativa pro skupinu: každá dvojice navrhne prompt, nahlas přečte, lektor pustí jen ty nejlepší.</li>
+      <li>Druhá alternativa: každý napíše jen <em>prompt</em> (ne celý storybook), pak skupinou vybereme 3 nejlepší a ty pustíme naživo.</li>
+    </ul>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Tohle je nejnáročnější aktivita dne na infrastrukturu. Předem otestuj prosím!</li>
+      <li>Plán B (pokud Gemini storybook nefunguje): Děti pošlou prompty lektorovi a on je pustí 1 po 1.</li>
+      <li>Plán C: ChatGPT s DALL-E (free také funguje) — vygeneruje obrázek + krátký příběh.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ PAUZA 2 ============ -->
+<section class="slide" data-block="pause">
+  <div class="divider-block">
+    <div>
+      <div style="font-size: clamp(5rem, 12vw, 10rem);">🥨</div>
+      <div class="label">Velká pauza</div>
+      <div class="time">20 minut · svačina</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLOCK 4 DIVIDER ============ -->
+<section class="slide section-divider" data-block="4">
+  <div class="divider-block">
+    <div>
+      <div class="num">4</div>
+      <div class="label">Když AI lže</div>
+      <div class="time">40 minut</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 27: HALUCINACE ============ -->
+<section class="slide" data-block="4">
+  <span class="kicker coral">Důležité slovo</span>
+  <h1>Halucinace</h1>
+  <p class="lead" style="margin-top: 2vh;">Když si AI <strong>vymyslí</strong> něco, co neexistuje — ale řekne to s takovou jistotou, že tomu uvěříš.</p>
+  <div class="grid grid-2" style="margin-top: 3vh;">
+    <div class="card teal">
+      <h3>🐦 Modrý ledňáček</h3>
+      <p style="margin-bottom:0;"><strong>EXISTUJE.</strong><br>AI ti ho popíše správně — kde žije, co jí, jak vypadá.</p>
+    </div>
+    <div class="card coral">
+      <h3>🐦 Fialový ledňáček</h3>
+      <p style="margin-bottom:0;"><strong>NEEXISTUJE.</strong><br>AI ti ho popíše <em>úplně stejně přesvědčivě</em>. Vymyslí latinský název i biotop.</p>
+    </div>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Vrať se k velké hlášce: „AI nehledá pravdu, hádá nejpravděpodobnější." Tam je kořen halucinace.</li>
+      <li>Slovo „halucinace" je stejné jako u nemoci, kdy někdo vidí věci, které nejsou.</li>
+      <li>Důležitý moment: AI si nevymýšlí naschvál. Nemá s tím zlý úmysl. Jen hádá.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 28: DEMO HALUCINACE ============ -->
+<section class="slide" data-block="4">
+  <div class="demo">
+    <span class="tag">Demo lektora · 5 minut</span>
+    <h2>Vyvoláme halucinaci</h2>
+    <p class="lead">Položíme AI otázku o něčem, <strong>co neexistuje</strong>.<br>Sledujte, jak vážně odpoví.</p>
+    <div class="prompt" style="margin-top: 2vh; background: rgba(255,255,255,0.15);">
+      Vysvětli mi <strong>syndrom zaspaného úkolu</strong>. Jak ho lidé poznají a jak se léčí?
+    </div>
+  </div>
+  <div class="alts">
+    <h4>📌 Pro lektora — alternativy</h4>
+    <ul>
+      <li>„Kdo napsal knihu Čaroděj z Brna v roce 1823?"</li>
+      <li>„Vysvětli mi efekt přemrzlé kočky v kvantové fyzice."</li>
+      <li>„Kdo vyhrál Nobelovu cenu za vaření v roce 1985?"</li>
+    </ul>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Vyber jednu z alternativ. Pusť do ChatGPT.</li>
+      <li>Upozornění: některé novější modely (GPT-4o+) mají tendenci říct „toto neexistuje". Pokud se to stane, pochval ho a zdůrazni: <em>„Vidíte? Modely se učí. Ale nestačí jim věřit naslepo."</em></li>
+      <li>Pokud halucinuje (většinou ano u méně známých témat) — přečti to nahlas. Děti se budou smát.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 29: AKTIVITA — SPOT THE ERROR ============ -->
+<section class="slide" data-block="4">
+  <div class="activity">
+    <span class="tag">Aktivita · 10 minut</span>
+    <h2>Najdi chybu!</h2>
+    <p class="lead">Ukážu vám <strong>5 odpovědí</strong>, které mi dala AI.<br>Tři jsou pravdivé. <span class="hl-coral">Dvě jsou vymyšlené.</span></p>
+    <p class="lead" style="margin-top: 2vh;">🙋 Hlasujte: která je pravda, která lež?</p>
+  </div>
+  <div class="alts">
+    <h4>📌 Pro lektora — náměty pro 5 odpovědí</h4>
+    <ul>
+      <li>✓ „Praha leží na řece Vltavě." (pravda)</li>
+      <li>✓ „Nejvyšší hora ČR je Sněžka, 1603 m." (pravda)</li>
+      <li>✗ „První mobil byl vyroben v roce 1959 v Brně." (lež — Motorola, 1973, USA)</li>
+      <li>✓ „Karel IV. byl korunován v roce 1346." (pravda)</li>
+      <li>✗ „Český jazyk má 13 souhláskových párů, včetně velmi vzácného 'ť/ď/ň/ž'." (nesmysl, který zní chytře)</li>
+    </ul>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Vytiskni si 5 karet s tvrzeními (NE na slidu — budeš je promítat ručně). Zájem děti udržíš jen, když to nečtou.</li>
+      <li>Po každém tvrzení: zvedněte ruku — kdo věří, kdo ne?</li>
+      <li>Pak odhalíš pravdu a vysvětlíš: „Jak to mohu já vědět? Ověřil jsem si to v encyklopedii."</li>
+      <li>Konec aktivity: jak ověřit informaci? → kniha, encyklopedie, expert, druhý chatbot.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 30: BEZPEČNOST — 5 PRAVIDEL ============ -->
+<section class="slide" data-block="4">
+  <h2 class="center">Pět pravidel <span class="hl">bezpečnosti</span></h2>
+  <div class="grid grid-2" style="margin-top: 2.5vh; gap: 1.2vh 1.2vw;">
+    <div class="rule"><div class="num">1</div><div class="body"><h3>Žádná osobní data</h3><p>Adresa, telefon, hesla, jméno školy nepatří do AI.</p></div></div>
+    <div class="rule"><div class="num">2</div><div class="body"><h3>Žádné fotky obličejů</h3><p>Ani sebe, ani kamarádů, ani rodičů.</p></div></div>
+    <div class="rule"><div class="num">3</div><div class="body"><h3>Citlivé věci ne</h3><p>Nemoc babičky ani hádka rodičů AI nepotřebuje.</p></div></div>
+    <div class="rule"><div class="num">4</div><div class="body"><h3>Dodržuj pravidla školy</h3><p>AI checkery existují. Když to učitel zakáže, je to vážné.</p></div></div>
+    <div class="rule"><div class="num">5</div><div class="body"><h3>Důležité ověř jinde</h3><p>Když jde o zdraví nebo známky — nikdy jen AI.</p></div></div>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Pravidlo 1: Když napíšeš text do AI, pošle se na server. Většina firem to nepoužívá k tréninku — ale ty data tam pár dní jsou.</li>
+      <li>Pravidlo 4: AI checkery (GPTZero, Originality) na mnoha středních školách už dnes fungují. Když podvedeš, dostaneš F.</li>
+      <li>Vsuvka: AI Act v Evropě říká, že důležitá rozhodnutí o lidech musí dělat člověk. To je zákon.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 31: ETIKA — JE TO SPRAVEDLIVÉ? ============ -->
+<section class="slide" data-block="4">
+  <span class="kicker purple">K zamyšlení</span>
+  <h2>Je AI <span class="hl-coral">spravedlivá</span>?</h2>
+  <p class="lead" style="margin-top: 2vh;">AI se naučila z lidských textů.<br>Lidi mají někdy předsudky. <strong>AI je má taky.</strong></p>
+  <div class="card yellow" style="margin-top: 3vh;">
+    <p class="lead" style="margin-bottom: 0;">🤔 <strong>Otázka:</strong> Kdyby AI rozhodovala, kdo dostane místo ve sportovním kroužku — co by bylo <span class="hl-coral">spravedlivé</span> brát v úvahu? Co by bylo <span class="hl">nespravedlivé</span>?</p>
+  </div>
+  <p class="lead" style="margin-top: 3vh; text-align: center;"><strong>Důležité pravidlo:</strong> Důležitá rozhodnutí dělá <span class="hl">člověk</span>. AI radí.</p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Pusť diskusi na 5 minut. Sbírej nápady.</li>
+      <li>Tipy: schopnosti, motivace = férové. Pohlaví, barva pleti, příjem rodičů, město bydliště = neférové.</li>
+      <li>Závěr: AI udělá rozhodnutí podle dat. Pokud máme špatná data, máme špatná rozhodnutí. Lidé to musí kontrolovat.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ BLOCK 5 DIVIDER ============ -->
+<section class="slide section-divider" data-block="5">
+  <div class="divider-block">
+    <div>
+      <div class="num">5</div>
+      <div class="label">Velké finále</div>
+      <div class="time">30 minut</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 33: GAMMA PREZENTACE ============ -->
+<section class="slide" data-block="5">
+  <div class="demo">
+    <span class="tag">Demo lektora · 8 minut</span>
+    <h2>Naše dnešní třída</h2>
+    <p class="lead">Asistent celý den nahrával vaše jména, zvířata a sny.<br>Teď uvidíme, jak vás vidí AI. 👀</p>
+    <p class="lead" style="margin-top: 2vh;">🪄 Pustíme <strong>Gammu</strong>. Vyrobí prezentaci „Kdo jsme" za 90 sekund.</p>
+  </div>
+  <div class="alts">
+    <h4>📌 Pro lektora — co dát do Gammy</h4>
+    <ul>
+      <li>Přepis ranního interview (z NotebookLM nebo ChatGPT Whisper).</li>
+      <li>Prompt: „Vytvoř 10slidovou hravou prezentaci o těchto dětech: jejich jména, oblíbená zvířata, vysněné profese. Pro každé dítě 1 slide. Závěr: skupinový pozdrav od AI."</li>
+      <li>Backup: pokud Gamma nefunguje — ukázat předem připravenou (asistent během dne vyrobí jako pojistku).</li>
+    </ul>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Asistent během dne připravil přepis interview a prompt do Gammy. Tady ho jen pustíme.</li>
+      <li>Pojistka: pokud Gamma free vyprší — máš vyrobeno předem.</li>
+      <li>Komentuj během prohlížení slidů: „Vidíte to? AI vás takhle vidí. Něco trefila, něco ne — to je normální."</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 34: SUNO PÍSEŇ ============ -->
+<section class="slide" data-block="5">
+  <div class="demo">
+    <span class="tag">Demo lektora · 5 minut</span>
+    <h2>Naše píseň</h2>
+    <p class="lead">🎵 Asistent dnes vytvořil <strong>písničku</strong> v Sunu.<br>Každý z vás má v ní svůj řádek.</p>
+    <p class="lead" style="margin-top: 2vh;">Jméno + zvíře + sen = textová surovina.<br>Suno z toho udělalo song. <span class="hl">Pojďme tančit!</span></p>
+  </div>
+  <div class="alts">
+    <h4>📌 Pro lektora — výběr stylu</h4>
+    <ul>
+      <li>Default: <strong>hip-hop / pop</strong> (děti to milují).</li>
+      <li>Alternativy: rock pro chlapce, K-pop, country, taneční.</li>
+      <li>Tip: nech děti hlasovat na začátku dne („Jaký styl písně chcete?") a asistent to během dne vyrobí.</li>
+    </ul>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Suno free má cca 10 generací denně — víc než dost.</li>
+      <li>Osvědčená pojistka: vyrob 2 různé verze, nech děti hlasovat, kterou pustíme.</li>
+      <li>Pusť písničku, nech tančit. Tohle je vrchol dne.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 35: PĚT ZLATÝCH PRAVIDEL ============ -->
+<section class="slide" data-block="5">
+  <h2 class="center">Pět <span class="hl">zlatých pravidel</span></h2>
+  <p class="lead center" style="opacity: 0.7;">Tohle si zapamatuj. Hodí se to.</p>
+  <div class="grid grid-2" style="margin-top: 2.5vh; gap: 1.2vh 1.2vw;">
+    <div class="rule"><div class="num">🟡</div><div class="body"><h3>AI si občas vymýšlí</h3><p>Důležité věci si vždycky ověř někde jinde.</p></div></div>
+    <div class="rule"><div class="num">🟡</div><div class="body"><h3>AI je trenér, ne hráč</h3><p>Pomáhá ti být lepší. Přemýšlet musíš ty.</p></div></div>
+    <div class="rule"><div class="num">🟡</div><div class="body"><h3>Co tě baví, dělej sám</h3><p>Nudné věci klidně deleguj. Kreativitu si nech.</p></div></div>
+    <div class="rule"><div class="num">🟡</div><div class="body"><h3>Chraň si soukromí</h3><p>Osobní data, fotky a hesla AI nepatří.</p></div></div>
+    <div class="rule" style="grid-column: span 2;"><div class="num">🟡</div><div class="body"><h3>Neboj se experimentovat</h3><p>AI nepokazíš špatnou otázkou. Zkoušej, ptej se, hraj si.</p></div></div>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Tento slide je hlavní take-home. Děti by si ho měly pamatovat.</li>
+      <li>Můžeš nechat každé dítě zopakovat jedno pravidlo nahlas — fixuje si to.</li>
+      <li>Pravidlo 5 je nejdůležitější. Děti často mají strach AI „pokazit". Nemůžou.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 36: TVOJI AI KAMARÁDI ============ -->
+<section class="slide" data-block="5">
+  <h2>Tvoji <span class="hl-coral">AI kamarádi</span></h2>
+  <p class="lead">Tyhle si můžeš vyzkoušet doma. <strong>Většinou zdarma.</strong></p>
+  <div class="grid grid-3" style="margin-top: 2.5vh;">
+    <div class="bot">
+      <div class="emoji">💬</div>
+      <div class="name">ChatGPT</div>
+      <div class="by">chatgpt.com</div>
+    </div>
+    <div class="bot">
+      <div class="emoji">📖</div>
+      <div class="name">Claude</div>
+      <div class="by">claude.ai</div>
+    </div>
+    <div class="bot">
+      <div class="emoji">✨</div>
+      <div class="name">Gemini</div>
+      <div class="by">gemini.google.com</div>
+    </div>
+    <div class="bot">
+      <div class="emoji">📚</div>
+      <div class="name">NotebookLM</div>
+      <div class="by">notebook.google.com</div>
+    </div>
+    <div class="bot">
+      <div class="emoji">🎨</div>
+      <div class="name">Gamma</div>
+      <div class="by">gamma.app</div>
+    </div>
+    <div class="bot">
+      <div class="emoji">🎵</div>
+      <div class="name">Suno</div>
+      <div class="by">suno.com</div>
+    </div>
+  </div>
+  <p class="lead" style="margin-top: 3vh; text-align:center; opacity:0.7;">📩 Rodiče dostanou e-mail s odkazy a tvými dnešními výtvory.</p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Důležité: děti pod 13 let (v EU) potřebují souhlas rodičů u většiny těchto nástrojů.</li>
+      <li>Asistent po workshopu pošle rodičům e-mail s: 5 pravidly, odkazy, fotkou skupiny, písní, prezentací.</li>
+      <li>To je take-home, který nahrazuje tištěné materiály.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 37: Q&A ============ -->
+<section class="slide" data-block="5">
+  <span class="kicker">Závěr</span>
+  <h1>Vaše otázky.</h1>
+  <p class="lead" style="margin-top: 2vh;">Co vás napadlo během dne?<br>Co jste nestihli říct?<br>Co byste chtěli zkusit?</p>
+  <p class="lead" style="margin-top: 3vh; text-align: center;">🙋 Pojďme.</p>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Nech 5 minut volného Q&A.</li>
+      <li>Pokud se nikdo nezeptá — vrať se k flipchartu z úvodu („Co je AI?") a porovnejte odpovědi pak a teď.</li>
+      <li>Závěrečný gesturní moment: poděkování, potlesk, foto skupiny.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- ============ SLIDE 38: ZÁVĚR ============ -->
+<section class="slide cover" data-block="5">
+  <div>
+    <span class="kicker">Děkujeme</span>
+    <h1 style="font-size: clamp(3rem, 7vw, 6rem);">Bavte se s AI.<br>Ale chytře.</h1>
+    <p class="subtitle">Inspiruj.se · Miloš &amp; Senta Čermák</p>
+  </div>
+  <aside class="speaker-notes">
+    <h4>Pro lektora</h4>
+    <ul>
+      <li>Závěrečný slide. Skupinová fotka před tímto pozadím = parádní memento pro rodiče.</li>
+      <li>Po workshopu: poslat rodičům děkovný e-mail s materiály do 24 hodin.</li>
+    </ul>
+  </aside>
+</section>
+
+</div><!-- /deck -->
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <button class="prev" aria-label="Předchozí" title="←">←</button>
+  <span class="counter">1 / 40</span>
+  <button class="next" aria-label="Další" title="→">→</button>
+  <button class="menubtn notes-btn" title="N — Speaker notes">📝</button>
+  <button class="menubtn overview-btn" title="O — Přehled">⊞</button>
+  <button class="menubtn fullscreen-btn" title="F — Fullscreen">⛶</button>
+  <button class="menubtn help-btn" title="? — Nápověda">?</button>
+</nav>
+
+<div class="progress" id="progress"></div>
+
+<!-- OVERVIEW -->
+<div class="overview" id="overview">
+  <h2>Přehled slidů</h2>
+  <div class="overview-grid" id="overviewGrid"></div>
+</div>
+
+<!-- SPEAKER NOTES -->
+<div class="notes-panel" id="notesPanel">
+  <div id="notesContent"></div>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="helpOverlay">
+  <div class="content">
+    <h2>Klávesové zkratky</h2>
+    <table>
+      <tr><td class="k">→ space</td><td>Další slide</td></tr>
+      <tr><td class="k">←</td><td>Předchozí slide</td></tr>
+      <tr><td class="k">N</td><td>Poznámky pro lektora</td></tr>
+      <tr><td class="k">O</td><td>Přehled všech slidů</td></tr>
+      <tr><td class="k">F</td><td>Fullscreen</td></tr>
+      <tr><td class="k">Home / End</td><td>První / poslední slide</td></tr>
+      <tr><td class="k">Esc</td><td>Zavřít přehled / poznámky</td></tr>
+      <tr><td class="k">?</td><td>Tato nápověda</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+(function() {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.querySelector('.counter');
+  const progress = document.getElementById('progress');
+  const overview = document.getElementById('overview');
+  const overviewGrid = document.getElementById('overviewGrid');
+  const notesPanel = document.getElementById('notesPanel');
+  const notesContent = document.getElementById('notesContent');
+  const helpOverlay = document.getElementById('helpOverlay');
+  let current = 0;
+
+  function show(i) {
+    if (i < 0 || i >= slides.length) return;
+    slides[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    counter.textContent = (i+1) + ' / ' + slides.length;
+    progress.style.width = ((i+1)/slides.length*100) + '%';
+    if (notesPanel.classList.contains('active')) updateNotes();
+    location.hash = '#' + (i+1);
+  }
+
+  function next() { show(Math.min(current+1, slides.length-1)); }
+  function prev() { show(Math.max(current-1, 0)); }
+
+  function updateNotes() {
+    const note = slides[current].querySelector('.speaker-notes');
+    if (note) {
+      notesContent.innerHTML = note.innerHTML;
+    } else {
+      notesContent.innerHTML = '<p style="opacity:0.6;">Žádné poznámky pro tento slide.</p>';
+    }
+  }
+
+  function toggleNotes() {
+    notesPanel.classList.toggle('active');
+    if (notesPanel.classList.contains('active')) updateNotes();
+  }
+
+  function buildOverview() {
+    overviewGrid.innerHTML = '';
+    slides.forEach((s, idx) => {
+      const t = document.createElement('div');
+      t.className = 'overview-thumb';
+      const h = s.querySelector('h1, h2, .label');
+      const num = document.createElement('div');
+      num.className = 'num';
+      num.textContent = '#' + (idx+1);
+      t.appendChild(num);
+      const tt = document.createElement('div');
+      tt.textContent = h ? h.textContent.replace(/\s+/g, ' ').trim().slice(0, 80) : ('Slide ' + (idx+1));
+      t.appendChild(tt);
+      t.onclick = () => { show(idx); overview.classList.remove('active'); };
+      overviewGrid.appendChild(t);
+    });
+  }
+
+  function toggleOverview() {
+    overview.classList.toggle('active');
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }
+
+  function toggleHelp() {
+    helpOverlay.classList.toggle('active');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch (e.key) {
+      case 'ArrowRight':
+      case ' ':
+      case 'PageDown':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault(); prev(); break;
+      case 'Home': e.preventDefault(); show(0); break;
+      case 'End': e.preventDefault(); show(slides.length-1); break;
+      case 'n': case 'N': e.preventDefault(); toggleNotes(); break;
+      case 'o': case 'O': e.preventDefault(); toggleOverview(); break;
+      case 'f': case 'F': e.preventDefault(); toggleFullscreen(); break;
+      case '?': case '/': e.preventDefault(); toggleHelp(); break;
+      case 'Escape':
+        if (overview.classList.contains('active')) overview.classList.remove('active');
+        if (notesPanel.classList.contains('active')) notesPanel.classList.remove('active');
+        if (helpOverlay.classList.contains('active')) helpOverlay.classList.remove('active');
+        break;
+    }
+  });
+
+  document.querySelector('.next').onclick = next;
+  document.querySelector('.prev').onclick = prev;
+  document.querySelector('.notes-btn').onclick = toggleNotes;
+  document.querySelector('.overview-btn').onclick = toggleOverview;
+  document.querySelector('.fullscreen-btn').onclick = toggleFullscreen;
+  document.querySelector('.help-btn').onclick = toggleHelp;
+  overview.onclick = e => { if (e.target === overview) overview.classList.remove('active'); };
+  helpOverlay.onclick = () => helpOverlay.classList.remove('active');
+
+  buildOverview();
+
+  // Hash navigation
+  if (location.hash) {
+    const n = parseInt(location.hash.slice(1)) - 1;
+    if (!isNaN(n) && n >= 0 && n < slides.length) show(n);
+  } else {
+    show(0);
+  }
+
+  // Hide speaker-notes from layout
+  document.querySelectorAll('.speaker-notes').forEach(n => n.style.display = 'none');
+})();
+</script>
+
+</body>
+</html>
